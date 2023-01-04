@@ -1,0 +1,51 @@
+{
+  "manifest_version": 2,
+  "version": "1.0.3",
+  "name": "Reddit video downloader",
+  "description": "Download video.",
+  "author": "ruriko123",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "all_frames": true,
+      "js": ["src/vendor/ffmpeg.min.js", "src/vendor/ffmpeg-core.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    "src/vendor/*"
+  ],
+  "background": {
+
+    "scripts": [
+      "background.js",
+      "src/vendor/ffmpeg.min.js",
+      "src/vendor/ffmpeg-core.js"
+    ],
+    "persistent": true
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab",
+    "downloads",
+    "contextMenus",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*/*"
+  ],
+
+  "icons": {
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' blob:; object-src 'self'; media-src 'self' blob:",
+  "cross_origin_embedder_policy": {
+    "value": "require-corp"
+  },
+  "cross_origin_opener_policy": {
+    "value": "same-origin"
+  }
+}
