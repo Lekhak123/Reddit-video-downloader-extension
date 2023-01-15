@@ -31,12 +31,21 @@ const get_reddit = async(link) => {
 
 }
 
-var showForPages = ["https://www.reddit.com/*"]
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.contextMenus.create({
-        "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
-        title: "Download and save the video", id: "menu1", contexts: ["video"]});
-});
+window.onload = function(event){
+    chrome.tabs.onUpdated.addListener(function () {
+        chrome.contextMenus.create({
+            "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
+            title: "Download and save the video", id: "menu1", contexts: ["video"]});
+    });
+
+}
+
+
+// chrome.runtime.onInstalled.addListener(function () {
+//     chrome.contextMenus.create({
+//         "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
+//         title: "Download and save the video", id: "menu1", contexts: ["video"]});
+// });
 
 async function saveAs(blob, fileName) {
     var url = window.URL.createObjectURL(blob);
@@ -54,13 +63,16 @@ async function saveAs(blob, fileName) {
     // a.click() has completed, atleast on EdgeHTML 15.15048
     setTimeout(async function() {
         window.URL.revokeObjectURL(url);
+    
+    
         chrome.contextMenus.update('menu1', {
             title: "Download and save the video",
             enabled: true
         });
-        setTimeout(() => {
-            chrome.runtime.reload();
-        }, 3000);
+
+        // setTimeout(() => {
+        //     chrome.runtime.reload();
+        // }, 3000);
         
 
     }, 1000);
