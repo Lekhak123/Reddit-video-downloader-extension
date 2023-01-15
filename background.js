@@ -7,6 +7,17 @@ const create = async() => {
     await ffmpeg.load();
     return ffmpeg;
 };
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+
 
 
 const get_reddit = async(link) => {
@@ -18,9 +29,9 @@ const get_reddit = async(link) => {
                 ?.secure_media
                     ?.reddit_video
                         ?.fallback_url
-        let normal_url = audio_url.replace("?source=fallback", "")
-        audio_url = audio_url.replace(/DASH_[0-9]+/gm, "DASH_audio")
-        audio_url = audio_url.replace("?source=fallback", "")
+        let normal_url = audio_url?.replace("?source=fallback", "")
+        audio_url = audio_url?.replace(/DASH_[0-9]+/gm, "DASH_audio")
+        audio_url = audio_url?.replace("?source=fallback", "")
         if (!audio_url) {
             return "Error"
         }
@@ -31,21 +42,21 @@ const get_reddit = async(link) => {
 
 }
 
-window.onload = function(event){
-    chrome.tabs.onUpdated.addListener(function () {
-        chrome.contextMenus.create({
-            "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
-            title: "Download and save the video", id: "menu1", contexts: ["video"]});
-    });
+// window.onload = function(event){
+//     chrome.tabs.onUpdated.addListener(function () {
+//         chrome.contextMenus.create({
+//             "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
+//             title: "Download and save the video", id: "menu1", contexts: ["video"]});
+//     });
 
-}
+// }
 
 
-// chrome.runtime.onInstalled.addListener(function () {
-//     chrome.contextMenus.create({
-//         "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
-//         title: "Download and save the video", id: "menu1", contexts: ["video"]});
-// });
+chrome.runtime.onInstalled.addListener(function () {
+    chrome.contextMenus.create({
+        "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
+        title: "Download and save the video", id: "menu1", contexts: ["video"]});
+});
 
 async function saveAs(blob, fileName) {
     var url = window.URL.createObjectURL(blob);
@@ -59,8 +70,6 @@ async function saveAs(blob, fileName) {
 
     document.body.removeChild(anchorElem);
 
-    // On Edge, revokeObjectURL should be called only after
-    // a.click() has completed, atleast on EdgeHTML 15.15048
     setTimeout(async function() {
         window.URL.revokeObjectURL(url);
     
@@ -70,9 +79,12 @@ async function saveAs(blob, fileName) {
             enabled: true
         });
 
-        // setTimeout(() => {
-        //     chrome.runtime.reload();
-        // }, 3000);
+        setTimeout(() => {
+            //chrome.tabs.reload();
+
+            chrome.runtime.reload();
+
+        }, 3000);
         
 
     }, 1000);
@@ -85,6 +97,13 @@ chrome.contextMenus.onClicked.addListener(async function (info, tab) {
     });
         let url_link = info.pageUrl
         let res = await get_reddit(url_link)
+        if (res==="Error"){
+            chrome.contextMenus.update('menu1', {
+                title:"Downloading the video.",
+                enabled: true
+            });
+        } else {
+            
         const ffmpeg = await create();
         let { fetchFile } = FFmpeg;
         ffmpeg.FS('writeFile', 'video.mp4', await fetchFile(res[0]));
@@ -95,6 +114,6 @@ chrome.contextMenus.onClicked.addListener(async function (info, tab) {
         var blob1 = new Blob([byteArray], {type: "application/octet-stream"});
         var fileName1 = "killme.mp4";
         await saveAs(blob1, fileName1)
-
+}
         
     });
