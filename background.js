@@ -8,9 +8,6 @@ const create = async() => {
     return ffmpeg;
 };
 
-chrome.runtime.onInstalled.addListener(function () {
-        chrome.contextMenus.create({title: "Download and save the video.", id: "menu1", contexts: ["video"]});
-    });
 
 const get_reddit = async(link) => {
     try {
@@ -34,9 +31,15 @@ const get_reddit = async(link) => {
 
 }
 
-function saveAs(blob, fileName) {
-    var url = window.URL.createObjectURL(blob);
+var showForPages = ["https://www.reddit.com/*"]
+chrome.runtime.onInstalled.addListener(function () {
+    chrome.contextMenus.create({
+        "documentUrlPatterns": ["*://*.reddit.com/r/*/comments/*/*/"],
+        title: "Download and save the video", id: "menu1", contexts: ["video"]});
+});
 
+async function saveAs(blob, fileName) {
+    var url = window.URL.createObjectURL(blob);
     var anchorElem = document.createElement("a");
     anchorElem.style = "display: none";
     anchorElem.href = url;
@@ -49,13 +52,25 @@ function saveAs(blob, fileName) {
 
     // On Edge, revokeObjectURL should be called only after
     // a.click() has completed, atleast on EdgeHTML 15.15048
-    setTimeout(function() {
+    setTimeout(async function() {
         window.URL.revokeObjectURL(url);
+        chrome.contextMenus.update('menu1', {
+            title: "Download and save the video",
+            enabled: true
+        });
+        setTimeout(() => {
+            chrome.runtime.reload();
+        }, 3000);
+        
+
     }, 1000);
 }
 
-chrome.contextMenus.onClicked .addListener(async function (info, tab) {
-
+chrome.contextMenus.onClicked.addListener(async function (info, tab) {
+    chrome.contextMenus.update('menu1', {
+        title:"Downloading the video.",
+        enabled: false
+    });
         let url_link = info.pageUrl
         let res = await get_reddit(url_link)
         const ffmpeg = await create();
@@ -67,6 +82,7 @@ chrome.contextMenus.onClicked .addListener(async function (info, tab) {
         let byteArray  = new Uint8Array(data.buffer);
         var blob1 = new Blob([byteArray], {type: "application/octet-stream"});
         var fileName1 = "killme.mp4";
-        saveAs(blob1, fileName1)
-        console.log(res)
+        await saveAs(blob1, fileName1)
+
+        
     });
