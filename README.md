@@ -17,3 +17,7 @@
 
 
 # You have your video with sound. 
+
+
+
+<span> <a href="https://www.flaticon.com/free-stickers/anime" title="anime stickers">Anime stickers created by Bubun_Design - Flaticon</a> </span>
