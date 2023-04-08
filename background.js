@@ -128,7 +128,7 @@ chrome
                 let data = await ffmpeg.FS('readFile', 'output.mp4');
                 let byteArray = new Uint8Array(data.buffer);
                 var blob1 = new Blob([byteArray], {type: "application/octet-stream"});
-                var fileName1 = "killme.mp4";
+                var fileName1 = "download.mp4";
                 await saveAs(blob1, fileName1);
                 setTimeout(() => {
                     ffmpeg.exit(); // ffmpeg.exit() is callable only after load() stage.
