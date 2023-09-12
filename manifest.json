@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "version": "1.0.3",
   "name": "Reddit video downloader",
-  "description": "Download video.",
+  "description": "Chrome extension to download videos from reddit",
   "author": "ruriko123",
   "content_scripts": [
     {
