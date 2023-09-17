@@ -58,6 +58,15 @@ chrome
             .create(contextMenuItem)
     });
 
+chrome
+    .runtime
+    .onStartup
+    .addListener(function () {
+        chrome
+            .contextMenus
+            .create(contextMenuItem);
+    });
+
 /* Download the reddit video after processing is complete */
 async function saveAs(blob, fileName) {
     try {
